@@ -2,13 +2,14 @@
 
 import re
 import unicodedata
+from slugify import slugify
 from socketio import socketio_manage
 from socketio.namespace import BaseNamespace
 from socketio.mixins import RoomsMixin, BroadcastMixin
 from werkzeug.exceptions import NotFound
 from gevent import monkey
 
-from flask import Flask, Response, request, render_template, url_for, redirect
+from flask import Flask, Response, request, render_template, url_for, redirect, session, flash
 from flask.ext.sqlalchemy import SQLAlchemy
 
 monkey.patch_all()
@@ -23,7 +24,6 @@ USERNAME = 'admin'
 PASSWORD = 'default'
 SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/chat.db'
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/chat.db'
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
@@ -61,6 +61,13 @@ class ChatUser(db.Model):
     def __unicode__(self):
         return self.name
 
+    # TODO: 後で使う
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        db.session.add(self)
+        db.session.commit()
+
 
 def get_default_context():
     title = app.config['TITLE']
@@ -90,32 +97,6 @@ def smart_text(s, encoding='utf-8', errors='strict'):
     else:
         s = six.text_type(s)
     return s
-
-
-# copy from https://pypi.python.org/pypi/unicode-slugify
-# from slugify import slugify
-# return slugify(value)
-def slugify(s, ok=SLUG_OK, lower=True, spaces=False):
-    # L and N signify letter/number.
-    # http://www.unicode.org/reports/tr44/tr44-4.html#GC_Values_Table
-    rv = []
-    for c in unicodedata.normalize('NFKC', smart_text(s)):
-        cat = unicodedata.category(c)[0]
-        if cat in 'LN' or c in ok:
-            rv.append(c)
-        if cat == 'Z':  # space
-            rv.append(' ')
-    new = ''.join(rv).strip()
-    if not spaces:
-        new = re.sub('[-\s]+', '-', new)
-    return new.lower() if lower else new
-
-
-# utils
-def old_slugify(value):
-    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
-    value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
-    return re.sub('[-\s]+', '-', value)
 
 
 def get_object_or_404(klass, **query):
@@ -172,6 +153,25 @@ def create():
         room, created = get_or_create(ChatRoom, name=name)
         return redirect(url_for('room', slug=room.slug))
     return redirect(url_for('rooms'))
+
+
+# TODO: ログイン
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != app.config['USERNAME']:
+            error = 'Invalid username'
+        elif request.form['password'] != app.config['PASSWORD']:
+            error = 'Invalid password'
+        else:
+            session['logged_in'] = True
+            flash('You were logged in')
+            return redirect(url_for('show_entries'))
+
+    context = get_default_context()
+    context.update(error=error)
+    return render_template('login.html', **context)
 
 
 class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
