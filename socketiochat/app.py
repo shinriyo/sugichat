@@ -1,19 +1,35 @@
+# -*- coding: utf-8 -*-
+
 from gevent import monkey
 
 monkey.patch_all()
 
 import time
+from sqlite3 import dbapi2 as sqlite3
 from threading import Thread
 from flask import Flask, render_template, session, request, flash, redirect, url_for
 from flask.ext.socketio import SocketIO, emit, join_room, leave_room
 
+# configuration
+USERNAME = 'admin'
+PASSWORD = 'default'
+TITLE = 'SugiChat'
+SECRET_KEY = 'secret!'
+NAMESPACE = '/test'
+
 app = Flask(__name__)
 app.debug = True
-app.config['TITLE'] = 'SugiChat'
-app.config['SECRET_KEY'] = 'secret!'
-app.config['NAMESPACE'] = '/test'
+# これで設定(configuration)の変数を突っ込める
+app.config.from_object(__name__)
+app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 socketio = SocketIO(app)
 thread = None
+
+# 新・旧に対応できている
+try:
+    from flask import _app_ctx_stack as stack
+except ImportError:
+    from flask import _request_ctx_stack as stack
 
 
 def background_thread():
@@ -62,10 +78,35 @@ def login():
     return render_template('login.html', **context)
 
 
+def get_db():
+    """Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    top = stack.top
+    if not hasattr(top, 'sqlite_db'):
+        sqlite_db = sqlite3.connect(app.config['DATABASE'])
+        sqlite_db.row_factory = sqlite3.Row
+        top.sqlite_db = sqlite_db
+
+    return top.sqlite_db
+
+
+def show_entries():
+    db = get_db()
+    cur = db.execute('select title, text from entries order by id desc')
+    entries = cur.fetchall()
+    return render_template('show_entries.html', entries=entries)
+
+
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
+    return redirect(url_for('show_entries'))
+
+
+@app.route('/room/<roomname>')
+def room(roomname):
     return redirect(url_for('show_entries'))
 
 

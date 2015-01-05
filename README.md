@@ -7,6 +7,10 @@ Overview
 
 Chat Application
 
+flaskrは公式のチュートリアルのもの。
+socketiochatはSocketIOのサイトから。
+flask_chatはから持ってきた。
+
 ## Demo
 
 N/A
