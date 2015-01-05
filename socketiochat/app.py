@@ -56,7 +56,10 @@ def login():
             session['logged_in'] = True
             flash('You were logged in')
             return redirect(url_for('show_entries'))
-    return render_template('login.html', error=error)
+
+    context = get_default_context()
+    context.update(error=error)
+    return render_template('login.html', **context)
 
 
 @app.route('/logout')
