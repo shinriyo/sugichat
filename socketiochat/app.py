@@ -7,10 +7,12 @@ monkey.patch_all()
 import time
 from sqlite3 import dbapi2 as sqlite3
 from threading import Thread
-from flask import Flask, render_template, session, request, flash, redirect, url_for
+from flask import Flask, render_template, session, request, flash, redirect, url_for, \
+    abort
 from flask.ext.socketio import SocketIO, emit, join_room, leave_room
 
 # configuration
+DATABASE = '/tmp/flaskr.db'
 USERNAME = 'admin'
 PASSWORD = 'default'
 TITLE = 'SugiChat'
@@ -91,11 +93,28 @@ def get_db():
     return top.sqlite_db
 
 
+@app.route('/add', methods=['POST'])
+def add_entry():
+    if not session.get('logged_in'):
+        abort(401)
+    db = get_db()
+    db.execute('insert into entries (title, text) values (?, ?)',
+               [request.form['title'], request.form['text']])
+    db.commit()
+    flash('New entry was successfully posted')
+    return redirect(url_for('show_entries'))
+
+
+@app.route('/show_entries')
 def show_entries():
     db = get_db()
     cur = db.execute('select title, text from entries order by id desc')
+
+    context = get_default_context()
     entries = cur.fetchall()
-    return render_template('show_entries.html', entries=entries)
+    context.update(entries=entries)
+    # return render_template('show_entries.html', entries=entries)
+    return render_template('show_entries.html', **context)
 
 
 @app.route('/logout')
