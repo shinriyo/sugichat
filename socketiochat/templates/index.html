@@ -7,7 +7,13 @@
     <script type="text/javascript" src="{{ url_for('static', filename='index.js') }}"></script>
 </head>
 <body>
-    <h1>Flask-SocketIO Test</h1>
+    <h1>SugiChat</h1>
+    {% if not session.logged_in %}
+    <a href="{{ url_for('login') }}">log in</a>
+    {% else %}
+    <a href="{{ url_for('logout') }}">log out</a>
+    {% endif %}
+
     <h2>Send:</h2>
     <form id="emit" method='POST' action='#'>
         <input type="text" name="emit_data" id="emit_data" placeholder="Message">
