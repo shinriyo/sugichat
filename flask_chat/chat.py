@@ -17,6 +17,7 @@ app = Flask(__name__)
 app.debug = True
 
 # configuration
+TITLE = 'SugiChat'
 SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/chat.db'
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/chat.db'
@@ -56,6 +57,12 @@ class ChatUser(db.Model):
 
     def __unicode__(self):
         return self.name
+
+
+def get_default_context():
+    title = app.config['TITLE']
+    dic = {'title': title}
+    return dic
 
 
 import six
@@ -135,6 +142,8 @@ def rooms():
     Homepage - lists all rooms.
     """
     context = {"rooms": ChatRoom.query.all()}
+    default_context = get_default_context()
+    context.update(default_context)
     return render_template('rooms.html', **context)
 
 
@@ -144,6 +153,8 @@ def room(slug):
     Show a room.
     """
     context = {"room": get_object_or_404(ChatRoom, slug=slug)}
+    default_context = get_default_context()
+    context.update(default_context)
     return render_template('room.html', **context)
 
 
@@ -168,8 +179,7 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         self.log("Socketio session started")
 
     def log(self, message):
-        # self.logger.info("[{0}] {1}".format(self.socket.sessid, message))
-        self.logger.info("[%s] %s" % (self.socket.sessid, message))
+        self.logger.info(u"[{0}] {1}".format(self.socket.sessid, message))
 
     def on_join(self, room):
         self.room = room
@@ -177,8 +187,7 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         return True
 
     def on_nickname(self, nickname):
-        # self.log('Nickname: {0}'.format(nickname))
-        self.log('Nickname: %s' % nickname)
+        self.log(u'Nickname: {0}'.format(nickname))
         self.nicknames.append(nickname)
         self.session['nickname'] = nickname
         self.broadcast_event('announcement', '%s has connected' % nickname)
@@ -196,8 +205,7 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         return True
 
     def on_user_message(self, msg):
-        # self.log('User message: {0}'.format(msg))
-        self.log('User message: %s' % msg)
+        self.log(u'User message: {0}'.format(msg))
         self.emit_to_room(self.room, 'msg_to_room',
                           self.session['nickname'], msg)
         return True
