@@ -4,11 +4,12 @@ monkey.patch_all()
 
 import time
 from threading import Thread
-from flask import Flask, render_template, session, request
+from flask import Flask, render_template, session, request, flash, redirect, url_for
 from flask.ext.socketio import SocketIO, emit, join_room, leave_room
 
 app = Flask(__name__)
 app.debug = True
+app.config['TITLE'] = 'SugiChat'
 app.config['SECRET_KEY'] = 'secret!'
 app.config['NAMESPACE'] = '/test'
 socketio = SocketIO(app)
