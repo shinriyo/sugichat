@@ -18,6 +18,9 @@ app.debug = True
 
 # configuration
 TITLE = 'SugiChat'
+# admin settings
+USERNAME = 'admin'
+PASSWORD = 'default'
 SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/chat.db'
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/chat.db'
