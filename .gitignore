@@ -61,4 +61,5 @@ target/
 *.swp
 
 # pycharm
-*idea*
+.idea
+workspace.xml
