@@ -15,7 +15,14 @@ monkey.patch_all()
 
 app = Flask(__name__)
 app.debug = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/chat.db'
+
+# configuration
+SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/chat.db'
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/chat.db'
+app.config.from_object(__name__)
+app.config.from_envvar('FLASKR_SETTINGS', silent=True)
+
 db = SQLAlchemy(app)
 
 
@@ -75,6 +82,9 @@ def smart_text(s, encoding='utf-8', errors='strict'):
     return s
 
 
+# copy from https://pypi.python.org/pypi/unicode-slugify
+# from slugify import slugify
+# return slugify(value)
 def slugify(s, ok=SLUG_OK, lower=True, spaces=False):
     # L and N signify letter/number.
     # http://www.unicode.org/reports/tr44/tr44-4.html#GC_Values_Table
@@ -93,9 +103,6 @@ def slugify(s, ok=SLUG_OK, lower=True, spaces=False):
 
 # utils
 def old_slugify(value):
-    from slugify import slugify
-
-    return slugify(value)
     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
     value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
     return re.sub('[-\s]+', '-', value)
