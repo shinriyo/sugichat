@@ -27,13 +27,21 @@ def background_thread():
                       namespace=app.config['NAMESPACE'])
 
 
+def get_default_context():
+    title = app.config['TITLE']
+    dic = {'title': title}
+    return dic
+
+
 @app.route('/')
 def index():
     global thread
     if thread is None:
         thread = Thread(target=background_thread)
         thread.start()
-    return render_template('index.html')
+
+    context = get_default_context()
+    return render_template('index.html', **context)
 
 
 @app.route('/login', methods=['GET', 'POST'])

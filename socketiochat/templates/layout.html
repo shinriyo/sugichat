@@ -1,5 +1,5 @@
 <!doctype html>
-<title>SugiChat</title>
+<title>{{ title }}</title>
 <head>
   <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
@@ -7,7 +7,7 @@
 </head>
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
 <div class=page>
-  <h1>SugiChat</h1>
+  <h1>{{ title }}</h1>
   <div class=metanav>
   {% if not session.logged_in %}
     <a href="{{ url_for('login') }}">log in</a>
