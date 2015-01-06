@@ -131,6 +131,10 @@ def rooms():
     return render_template('rooms.html', **context)
 
 
+import os
+from flask import send_from_directory
+
+
 @app.route('/<path:slug>')
 def room(slug):
     """
@@ -172,6 +176,14 @@ def login():
     context = get_default_context()
     context.update(error=error)
     return render_template('login.html', **context)
+
+
+# TODO: ログアウト
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    flash('You were logged out')
+    return redirect(url_for('show_entries'))
 
 
 class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):

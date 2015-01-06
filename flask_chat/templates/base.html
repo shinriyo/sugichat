@@ -5,6 +5,7 @@
     <title>{% block title %}{{ title }}{% endblock title %}</title>
     <link rel="stylesheet" href="/static/css/chat.css">
     <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <script type="text/javascript">
       var showForm = function() {
         $('form').slideDown(function() {
@@ -15,6 +16,14 @@
   </head>
   <body>
     <h1>{{ title }}</h1>
+    <div class=metanav>
+    {% if not session.logged_in %}
+      <a href="{{ url_for('login') }}">log in</a>
+    {% else %}
+      <a href="{{ url_for('logout') }}">log out</a>
+    {% endif %}
+    </div>
+
     <div class=page>
 
       <div id="main">
