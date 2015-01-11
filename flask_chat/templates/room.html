@@ -14,13 +14,15 @@
 <h2>Room: {{ room }}</h2>
 </div>
 <div id="chat">
-  <div id="nickname">
+  <input id="nick" value="{{ name }}" hidden="true">
+  <!-- IDとPASS -->
+  <!--div id="nickname">
     <form id="set-nickname" class="wrap">
       <p>Please type in your nickname and press enter.</p>
       <input id="nick">
       <p id="nickname-err">Nickname already in use</p>
     </form>
-  </div>
+  </div-->
   <div id="connecting">
     <div class="wrap">Connecting to socket.io server</div>
   </div>

@@ -157,7 +157,18 @@ def room(slug):
     context = {"room": get_object_or_404(ChatRoom, slug=slug)}
     default_context = get_default_context()
     context.update(default_context)
+    # TODO: user name
+    name = session['name']
+    context.update({'name': name})
+
     return render_template('room.html', **context)
+
+
+@app.route('/create_user', methods=['POST'])
+def create_user():
+    """
+    """
+    return redirect(url_for('rooms'))
 
 
 @app.route('/create', methods=['POST'])
@@ -184,8 +195,6 @@ def login():
         where = User.username == username
         # ユーザ名だけでまず検索
         res = db.session.query(User).filter(where)
-        print "-"*100
-        print (res.count())
 
         # ユーザ調べる
         if res.count() > 0:
@@ -217,6 +226,9 @@ def logout():
 
 
 class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
+    """
+    チャットルーム内で使われる
+    """
     nicknames = []
 
     def initialize(self):
@@ -232,6 +244,11 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         return True
 
     def on_nickname(self, nickname):
+        """
+        チャットルーム接続時のメッセージ
+        """
+        # nicknameはチャットルームに入った人の名前
+        nickname = self.session['name']
         self.log(u'Nickname: {0}'.format(nickname))
         self.nicknames.append(nickname)
         self.session['nickname'] = nickname
@@ -240,6 +257,9 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         return True, nickname
 
     def recv_disconnect(self):
+        """
+        チャットルーム切断時のメッセージ
+        """
         # Remove nickname from the list.
         self.log('Disconnected')
         nickname = self.session['nickname']

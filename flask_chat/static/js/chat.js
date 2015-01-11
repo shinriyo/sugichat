@@ -7,6 +7,15 @@ $(function() {
     socket.on('connect', function () {
         $('#chat').addClass('connected');
         socket.emit('join', window.room);
+
+        // chat.py on_nickname()
+        socket.emit('nickname', $('#nick').val(), function (set) {
+            console.log("my nick: " + $('#nick').val());
+            if (set) {
+                return $('#chat').addClass('nickname-set');
+            }
+        });
+        return false;
     });
 
     socket.on('announcement', function (msg) {
