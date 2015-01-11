@@ -13,3 +13,7 @@ gevent.monkey.patch_all()
 import chat
 chat.init_db()
 
+# admin追加
+from chat import User
+user = User(username='admin', password='default')
+user.save()
