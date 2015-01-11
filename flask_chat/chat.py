@@ -164,9 +164,26 @@ def room(slug):
     return render_template('room.html', **context)
 
 
+@app.route('/admin', methods=['POST'])
+def admin():
+    """
+    Adminページ
+    """
+    return redirect(url_for('rooms'))
+
+
 @app.route('/create_user', methods=['POST'])
 def create_user():
     """
+    ユーザの追加
+    """
+    return redirect(url_for('rooms'))
+
+
+@app.route('/remove_room', methods=['POST'])
+def create_user():
+    """
+    部屋の削除
     """
     return redirect(url_for('rooms'))
 
