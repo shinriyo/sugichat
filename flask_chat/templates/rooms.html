@@ -3,6 +3,25 @@
 {% block extra_js %}
 <script type="text/javascript">
   $(showForm);
+
+  // roomを削除
+  $(".room-delete-link").on("click", function() {
+      var delete_url = $(this).attr('data-delete-url');
+
+      $.ajax({
+          url: delete_url,
+          type: 'DELETE',
+          success: function(response) {
+              if (response.status == 'OK') {
+                  window.location = '{{ url_for('rooms') }}';
+              } else {
+                  alert('Delete failed.')
+              }
+          }
+      });
+
+      return false;
+  });
 </script>
 {% endblock %}
 
@@ -17,7 +36,10 @@
       <div>
         <!-- TODO: 削除機能 -->
         <a href="{{ room.get_absolute_url() }}">{{ room }}</a>
-        <a class="room-delete-link" href="#" data-delete-url="{{ url_for('remove_room', remove_room_id=room.id) }}">x</a>
+        <a class="room-delete-link" href="#"
+           data-delete-url="{{ url_for('remove_room', remove_room_id=room.id) }}">
+           x
+        </a>
       </div>
       <ul>
         <!-- TODO: 動かない -->
@@ -43,5 +65,4 @@
     <button type="submit" id="submit">Add Room</button>
   {% endif %}
 </form>
-<button class="room-delete-link">Room</button>
 {% endblock %}

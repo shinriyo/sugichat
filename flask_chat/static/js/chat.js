@@ -75,26 +75,6 @@ $(function() {
             return false;
         });
 
-        // roomを削除
-        $(".room-delete-link").on("click", function() {
-            alert("N");
-            /*
-            var delete_url = $(this).attr('data-delete-url');
-            $.ajax({
-                url: delete_url,
-                type: 'DELETE',
-                success: function(response) {
-                    if (response.status == 'OK') {
-                        window.location = {{ url_for('rooms') }};
-                    } else {
-                        alert('Delete failed.')
-                    }
-                }
-            });
-            */
-            return false;
-        });
-
         function clear () {
             $('#message').val('').focus();
         }

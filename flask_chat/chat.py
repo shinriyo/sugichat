@@ -182,8 +182,8 @@ def create_user():
     """
     return redirect(url_for('rooms'))
 
-
-@app.route('/remove_room', methods=['DELETE'])
+# http://study-flask.readthedocs.org/ja/latest/04.html
+@app.route('/remove_room/<int:remove_room_id>/delete/', methods=['DELETE'])
 def remove_room(remove_room_id):
     """
     部屋の削除
