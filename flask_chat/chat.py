@@ -173,7 +173,7 @@ def create():
     return redirect(url_for('rooms'))
 
 
-# TODO: ログイン
+# ログイン
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
@@ -208,7 +208,7 @@ def login():
     return render_template('login.html', **context)
 
 
-# TODO: ログアウト
+# ログアウト
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
