@@ -1,7 +1,8 @@
 $(function() {
 
-    var WEB_SOCKET_SWF_LOCATION = '/static/js/socketio/WebSocketMain.swf',
-        socket = io.connect('/chat');
+    //var WEB_SOCKET_SWF_LOCATION = '/static/js/socketio/WebSocketMain.swf',
+    //    socket = io.connect('/chat');
+    var socket = io.connect('/chat');
 
     socket.on('connect', function () {
         $('#chat').addClass('connected');
