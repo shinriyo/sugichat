@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <title>{% block title %}{{ title }}{% endblock title %}</title>
     <link rel="stylesheet" href="/static/css/chat.css">
     <link rel="stylesheet" href="/static/css/style.css">
@@ -28,7 +29,6 @@
     <div class=flash>{{ message }}</div>
     {% endfor %}
     </div>
-
     <div class=page>
 
       <div id="main">
@@ -40,7 +40,6 @@
       {% endblock form %}
     </div>
 
-    <script src="/static/js/jquery.min.js"></script>
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
     <script src="/static/js/socketio/socket.io.min.js"></script>

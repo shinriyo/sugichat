@@ -15,9 +15,9 @@
     {% for room in rooms %}
     <div class="room">
       <div>
-        <a href="{{ room.get_absolute_url() }}">{{ room }}</a>
         <!-- TODO: 削除機能 -->
-        <button>Delete</button>
+        <a href="{{ room.get_absolute_url() }}">{{ room }}</a>
+        <a class="room-delete-link" href="#" data-delete-url="{{ url_for('remove_room', remove_room_id=room.id) }}">x</a>
       </div>
       <ul>
         <!-- TODO: 動かない -->
@@ -35,11 +35,13 @@
 {% endblock content %}
 
 {% block form %}
-<form method="post" action="{{ url_for('create') }}">
+<form method="post" action="{{ url_for('create_room') }}">
   {# ログインした時だけ #}
   {% if session.logged_in %}
     <input type="text" id="name" name="name">
-    <input type="submit" id="submit" value="Add Room">
+    <!--input type="submit" id="submit" value="Add Room"-->
+    <button type="submit" id="submit">Add Room</button>
   {% endif %}
 </form>
+<button class="room-delete-link">Room</button>
 {% endblock %}

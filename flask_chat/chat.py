@@ -9,7 +9,7 @@ from socketio.mixins import RoomsMixin, BroadcastMixin
 from werkzeug.exceptions import NotFound
 from gevent import monkey
 
-from flask import Flask, Response, request, render_template, url_for, redirect, session, flash
+from flask import Flask, Response, request, render_template, url_for, redirect, session, flash, jsonify
 from flask.ext.sqlalchemy import SQLAlchemy
 
 monkey.patch_all()
@@ -120,7 +120,10 @@ def get_object_or_404(klass, **query):
     return instance
 
 
-def get_or_create(klass, **kwargs):
+def get_or_create_room(klass, **kwargs):
+    """
+    部屋を取得、なければ作る
+    """
     try:
         return get_object_or_404(klass, **kwargs), False
     except NotFound:
@@ -180,23 +183,30 @@ def create_user():
     return redirect(url_for('rooms'))
 
 
-@app.route('/remove_room', methods=['POST'])
-def create_user():
+@app.route('/remove_room', methods=['DELETE'])
+def remove_room(remove_room_id):
     """
     部屋の削除
     """
-    return redirect(url_for('rooms'))
+    print "0"*100
+    chat_room = ChatRoom.query.get(remove_room_id)
+    if chat_room is None:
+        response = jsonify({'status': 'Not Found'})
+        response.status_code = 404
+        return response
+    db.session.delete(chat_room)
+    db.session.commit()
+    return jsonify({'status': 'OK'})
 
-
-@app.route('/create', methods=['POST'])
-def create():
+@app.route('/create_room', methods=['POST'])
+def create_room():
     """
     Handles post from the "Add room" form on the homepage, and
     redirects to the new room.
     """
     name = request.form.get("name")
     if name:
-        room, created = get_or_create(ChatRoom, name=name)
+        room, created = get_or_create_room(ChatRoom, name=name)
         return redirect(url_for('room', slug=room.slug))
     return redirect(url_for('rooms'))
 
