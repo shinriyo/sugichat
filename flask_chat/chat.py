@@ -19,6 +19,8 @@ app.debug = True
 
 # configuration
 TITLE = 'SugiChat'
+# これ入れないとloginできない
+SECRET_KEY = 'development key'
 # admin settings
 USERNAME = 'admin'
 PASSWORD = 'default'
@@ -52,21 +54,34 @@ class ChatRoom(db.Model):
 
 
 class ChatUser(db.Model):
+    """
+    チャットルーム内のユーザ
+    """
     __tablename__ = 'chatusers'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), nullable=False)
+    # TODO: nameの代わりにする？
+    # user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     session = db.Column(db.String(20), nullable=False)
     chatroom_id = db.Column(db.Integer, db.ForeignKey('chatrooms.id'))
 
     def __unicode__(self):
         return self.name
 
-    # TODO: 後で使う
+
+# TODO: 後で使う
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), nullable=False)
+    password = db.Column(db.String(20), nullable=False)
+
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
         db.session.add(self)
         db.session.commit()
+
+    def __unicode__(self):
+        return self.username
 
 
 def get_default_context():
@@ -164,14 +179,26 @@ def create():
 def login():
     error = None
     if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME']:
+        username = request.form['username']
+        password = request.form['password']
+        # TODO: 今後DBでやる
+        """
+        where = (User.name == username) & (User.password == password)
+        res = session.query(User).filter(where)
+
+        if res.count:
+            print 'db'
+        """
+        # elif request.form['username'] != app.config['USERNAME']:
+        if username != app.config['USERNAME']:
             error = 'Invalid username'
-        elif request.form['password'] != app.config['PASSWORD']:
+        # elif request.form['password'] != app.config['PASSWORD']:
+        elif password != app.config['PASSWORD']:
             error = 'Invalid password'
         else:
             session['logged_in'] = True
             flash('You were logged in')
-            return redirect(url_for('show_entries'))
+            return redirect(url_for('rooms'))
 
     context = get_default_context()
     context.update(error=error)
@@ -183,7 +210,7 @@ def login():
 def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('rooms'))
 
 
 class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
