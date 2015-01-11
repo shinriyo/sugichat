@@ -21,9 +21,6 @@ app.debug = True
 TITLE = 'SugiChat'
 # これ入れないとloginできない
 SECRET_KEY = 'development key'
-# admin settings
-USERNAME = 'admin'
-PASSWORD = 'default'
 SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/chat.db'
 
 app.config.from_object(__name__)
@@ -75,6 +72,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False)
     password = db.Column(db.String(20), nullable=False)
+    # こちらは実際の名前
+    name = db.Column(db.String(20), nullable=False)
 
     def save(self, *args, **kwargs):
         db.session.add(self)
@@ -179,26 +178,30 @@ def create():
 def login():
     error = None
     if request.method == 'POST':
+        # DBでやる
         username = request.form['username']
         password = request.form['password']
-        # TODO: 今後DBでやる
-        """
-        where = (User.name == username) & (User.password == password)
-        res = session.query(User).filter(where)
+        where = User.username == username
+        # ユーザ名だけでまず検索
+        res = db.session.query(User).filter(where)
+        print "-"*100
+        print (res.count())
 
-        if res.count:
-            print 'db'
-        """
-        # elif request.form['username'] != app.config['USERNAME']:
-        if username != app.config['USERNAME']:
-            error = 'Invalid username'
-        # elif request.form['password'] != app.config['PASSWORD']:
-        elif password != app.config['PASSWORD']:
-            error = 'Invalid password'
+        # ユーザ調べる
+        if res.count() > 0:
+            where = User.password == password
+            res = res.filter(where)
+            # パスワード調べる
+            if res.count() > 0:
+                session['logged_in'] = True
+                # ユーザの名前入れておく
+                session['name'] = res[0].name
+                flash('You were logged in')
+                return redirect(url_for('rooms'))
+            else:
+                error = 'Invalid password'
         else:
-            session['logged_in'] = True
-            flash('You were logged in')
-            return redirect(url_for('rooms'))
+            error = 'Invalid username'
 
     context = get_default_context()
     context.update(error=error)
