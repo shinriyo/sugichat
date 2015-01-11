@@ -24,8 +24,14 @@ $(function() {
 
     socket.on('nicknames', function (nicknames) {
         $('#nicknames').empty().append($('<span>Online: </span>'));
+
+        // 重複を削除したリスト
+        var nicknames = nicknames.filter(function (x, i, self) {
+            return self.indexOf(x) === i;
+        });
+
         for (var i in nicknames) {
-          $('#nicknames').append($('<b>').text(nicknames[i]));
+            $('#nicknames').append($('<b>').text(nicknames[i]));
         }
     });
 

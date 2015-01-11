@@ -249,8 +249,12 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         """
         # nicknameはチャットルームに入った人の名前
         self.log(u'Nickname: {0}'.format(nickname))
+        if nickname in self.nicknames:
+            self.log(u"すでにいる。")
+
         self.nicknames.append(nickname)
         self.session['nickname'] = nickname
+        # jsに送る
         self.broadcast_event('announcement', '%s has connected' % nickname)
         self.broadcast_event('nicknames', self.nicknames)
         return True, nickname
@@ -262,7 +266,9 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         # Remove nickname from the list.
         self.log('Disconnected')
         nickname = self.session['nickname']
-        self.nicknames.remove(nickname)
+        # 居る時だけ外す
+        if nickname in self.nicknames:
+            self.nicknames.remove(nickname)
         self.broadcast_event('announcement', '%s has disconnected' % nickname)
         self.broadcast_event('nicknames', self.nicknames)
         self.disconnect(silent=True)
