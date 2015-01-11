@@ -2,29 +2,39 @@
 
 {% block extra_js %}
 <script type="text/javascript">
-    $(showForm);
+  $(showForm);
 </script>
 {% endblock %}
 
 {% block content %}
+  {% if not session.logged_in %}
+    {# ログインしてない時だけ #}
+    ログインしましょう。
+  {% else %}
+    {# ログインした時だけ #}
     {% for room in rooms %}
     <div class="room">
-        <h3><a href="{{ room.get_absolute_url() }}">{{ room }}</a></h3>
-        <ul>
-            {% for user in room.users.all() %}
-            <li>{{ user }}</li>
-            {% endfor %}
-        </ul>
+      <h3><a href="{{ room.get_absolute_url() }}">{{ room }}</a></h3>
+      <ul>
+        {% for user in room.users.all() %}
+        <li>{{ user }}</li>
+        {% endfor %}
+      </ul>
     </div>
     {% else %}
     <p>There are currently no rooms! Add one below.</p>
     {% endfor %}
-    <br clear="all">
+  {% endif %}
+  <br clear="all">
+
 {% endblock content %}
 
 {% block form %}
 <form method="post" action="{{ url_for('create') }}">
+  {# ログインした時だけ #}
+  {% if session.logged_in %}
     <input type="text" id="name" name="name">
     <input type="submit" id="submit" value="Add Room">
+  {% endif %}
 </form>
 {% endblock %}
