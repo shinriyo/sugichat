@@ -248,7 +248,6 @@ class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
         チャットルーム接続時のメッセージ
         """
         # nicknameはチャットルームに入った人の名前
-        nickname = self.session['name']
         self.log(u'Nickname: {0}'.format(nickname))
         self.nicknames.append(nickname)
         self.session['nickname'] = nickname
