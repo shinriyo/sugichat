@@ -14,8 +14,13 @@
     {# ログインした時だけ #}
     {% for room in rooms %}
     <div class="room">
-      <h3><a href="{{ room.get_absolute_url() }}">{{ room }}</a></h3>
+      <div>
+        <a href="{{ room.get_absolute_url() }}">{{ room }}</a>
+        <!-- TODO: 削除機能 -->
+        <button>Delete</button>
+      </div>
       <ul>
+        <!-- TODO: 動かない -->
         {% for user in room.users.all() %}
         <li>{{ user }}</li>
         {% endfor %}
