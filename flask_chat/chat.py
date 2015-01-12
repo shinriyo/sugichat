@@ -188,7 +188,6 @@ def remove_room(remove_room_id):
     """
     部屋の削除
     """
-    print "0"*100
     chat_room = ChatRoom.query.get(remove_room_id)
     if chat_room is None:
         response = jsonify({'status': 'Not Found'})
