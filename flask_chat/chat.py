@@ -182,6 +182,7 @@ def create_user():
     """
     return redirect(url_for('rooms'))
 
+
 # http://study-flask.readthedocs.org/ja/latest/04.html
 @app.route('/remove_room/<int:remove_room_id>/delete/', methods=['DELETE'])
 def remove_room(remove_room_id):
@@ -196,6 +197,7 @@ def remove_room(remove_room_id):
     db.session.delete(chat_room)
     db.session.commit()
     return jsonify({'status': 'OK'})
+
 
 @app.route('/create_room', methods=['POST'])
 def create_room():
@@ -249,6 +251,30 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('rooms'))
+
+
+@app.route('/create/', methods=['GET', 'POST'])
+def user_create():
+    if request.method == 'POST':
+        user = User(name=request.form['name'],
+                    email=request.form['email'],
+                    password=request.form['password'])
+        db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('.user_list'))
+    return render_template('user/edit.html')
+
+
+@app.route('/<int:user_id>/delete/', methods=['DELETE'])
+def user_delete(user_id):
+    user = User.query.get(user_id)
+    if user is None:
+        response = jsonify({'status': 'Not Found'})
+        response.status_code = 404
+        return response
+    db.session.delete(user)
+    db.session.commit()
+    return jsonify({'status': 'OK'})
 
 
 class ChatNamespace(BaseNamespace, RoomsMixin, BroadcastMixin):
