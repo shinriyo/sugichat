@@ -7,9 +7,10 @@ from socketio import socketio_manage
 from socketio.namespace import BaseNamespace
 from socketio.mixins import RoomsMixin, BroadcastMixin
 from werkzeug.exceptions import NotFound
+from werkzeug import check_password_hash, generate_password_hash
 from gevent import monkey
-
-from flask import Flask, Response, request, render_template, url_for, redirect, session, flash, jsonify
+from sqlalchemy.orm import synonym
+from flask import Flask, Response, request, render_template, url_for, redirect, session, flash, jsonify, abort
 from flask.ext.sqlalchemy import SQLAlchemy
 
 monkey.patch_all()
@@ -81,6 +82,46 @@ class User(db.Model):
 
     def __unicode__(self):
         return self.username
+
+
+"""
+
+class User(db.Model):
+    __tablename__ = 'users'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), default='', nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    _password = db.Column('password', db.String(100), nullable=False)
+
+    def _get_password(self):
+        return self._password
+
+    def _set_password(self, password):
+        if password:
+            password = password.strip()
+        self._password = generate_password_hash(password)
+
+    password_descriptor = property(_get_password, _set_password)
+    password = synonym('_password', descriptor=password_descriptor)
+
+    def check_password(self, password):
+        password = password.strip()
+        if not password:
+            return False
+        return check_password_hash(self.password, password)
+
+    @classmethod
+    def authenticate(cls, query, email, password):
+        user = query(cls).filter(cls.email == email).first()
+        if user is None:
+            return None, False
+        return user, user.check_password(password)
+
+    def __repr__(self):
+        return u'<User id={self.id} email={self.email!r}>'.format(
+            self=self)
+"""
 
 
 def get_default_context():
@@ -253,7 +294,32 @@ def logout():
     return redirect(url_for('rooms'))
 
 
+@app.route('/<int:user_id>/edit/', methods=['GET', 'POST'])
+# @login_required
+def user_detail(user_id):
+    user = User.query.get(user_id)
+    return render_template('user/detail.html', user=user)
+
+
+@app.route('/<int:user_id>/edit/', methods=['GET', 'POST'])
+# @login_required
+def user_edit(user_id):
+    user = User.query.get(user_id)
+    if user is None:
+        abort(404)
+    if request.method == 'POST':
+        user.name = request.form['name']
+        user.email = request.form['email']
+        if request.form['password']:
+            user.password = request.form['password']
+        # db.session.add(user)
+        db.session.commit()
+        return redirect(url_for('.user_detail', user_id=user_id))
+    return render_template('user/edit.html', user=user)
+
+
 @app.route('/create/', methods=['GET', 'POST'])
+# @login_required
 def user_create():
     if request.method == 'POST':
         user = User(name=request.form['name'],
@@ -266,6 +332,7 @@ def user_create():
 
 
 @app.route('/<int:user_id>/delete/', methods=['DELETE'])
+# @login_required
 def user_delete(user_id):
     user = User.query.get(user_id)
     if user is None:
