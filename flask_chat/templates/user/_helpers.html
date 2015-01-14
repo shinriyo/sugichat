@@ -5,12 +5,13 @@
 </div>
 <div>
   <ul>
-{% if show_edit %}
+    {% if show_edit %}
     <li><a href="{{ url_for('user_edit', user_id=user.id) }}">edit</a></li>
-{% endif %}
-{% if show_edit %}
-    <li><a class="user-delete-link" href="#" data-delete-url="{{ url_for('user_delete', user_id=user.id) }}">delete</a></li>
-{% endif %}
+    {% endif %}
+    {% if show_edit %}
+    <li><a class="user-delete-link" href="#"
+         data-delete-url="{{ url_for('user_delete', user_id=user.id) }}">delete</a></li>
+    {% endif %}
   </ul>
 </div>
 {% endmacro %}
