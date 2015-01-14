@@ -285,6 +285,21 @@ def login():
     context.update(error=error)
     return render_template('login.html', **context)
 
+# これ使いたい
+"""
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        user, authenticated = User.authenticate(db.session.query,
+                request.form['email'], request.form['password'])
+        if authenticated:
+            session['user_id'] = user.id
+            flash('You were logged in')
+            return redirect(url_for('show_entries'))
+        else:
+            flash('Invalid email or password')
+    return render_template('login.html')
+"""
 
 # ログアウト
 @app.route('/logout')
