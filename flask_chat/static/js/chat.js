@@ -35,6 +35,7 @@ $(function() {
         }
     });
 
+    // 他から来たメッセージ message()メソッドに送る
     socket.on('msg_to_room', message);
 
     socket.on('reconnect', function () {
@@ -50,8 +51,15 @@ $(function() {
         message('System', e ? e : 'A unknown error occurred');
     });
 
-    function message (from, msg) {
-        $('#lines').append($('<p>').append($('<b>').text(from), msg));
+    // 他から来たメッセージを処理
+    //function message (from, msg) {
+    var message = function(from, msg) {
+        //$('#lines').append($('<p>').append($('<b>').text(from), msg));
+        // TDOO: 今後削除や他の処理も入れる
+        var button = '<button>edit</button>' + ' ' +
+                     '<button>delete</button>';
+        var other_text = msg + ' ' + button;
+        $('#lines').append($('<p>').append($('<b>').text(from), other_text));
     }
 
     // DOM manipulation
@@ -75,7 +83,8 @@ $(function() {
             return false;
         });
 
-        function clear () {
+        //function clear () {
+        var clear = function() {
             $('#message').val('').focus();
         }
     });
