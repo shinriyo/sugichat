@@ -32,6 +32,28 @@
     <div id="lines"></div>
   </div>
 
+  <!-- TODO: message options
+  http://dev.styler.jp/bootstrap-plus.html
+  http://hyper-text.org/archives/2012/10/font_awesome.shtml
+  -->
+  <!-- TODO: ネットがないときは隠したい　-->
+  <div>
+    <ul class="commands">
+      <i class="fa fa-italic"></i>
+      <li data-wysihtml5-command="bold" title="Make text bold (CTRL + B)" class="btn"><i class="fa fa-bold fa-lg fw"></i>
+      </li>
+      <li data-wysihtml5-command="italic" title="Make text italic (CTRL + I)" class="btn">
+        <i class="fa fa-italic fa-lg fw"></i>
+      </li>
+      <li data-wysihtml5-command="underline" title="Make text italic (CTRL + I)" class="btn">
+        <i class="fa fa-underline fa-lg fw"></i>
+      </li>
+      <li data-wysihtml5-command="insertImage" title="Insert an image" class="btn">
+        <i class="fa fa-picture-o fa-lg fw"></i> Put in a Picture</li>
+    </ul>
+  </div>
+  <!-- TODO: ネットがないときは隠したい　-->
+  <!-- message -->
   <form id="send-message">
     <input id="message">
     <button>Send</button>
