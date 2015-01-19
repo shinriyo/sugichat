@@ -30,6 +30,7 @@ Flask
 ## Install
 
 ```
+pip install Flask-Security 
 ```
 
 ## Contribution
