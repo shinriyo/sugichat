@@ -34,7 +34,7 @@
     {% for room in rooms %}
     <div class="room">
       <div>
-        <!-- TODO: 削除機能 -->
+        <!-- TODO: 部屋の削除機能 -->
         <a href="{{ room.get_absolute_url() }}">{{ room }}</a>
         <a class="room-delete-link" href="#"
            data-delete-url="{{ url_for('remove_room', remove_room_id=room.id) }}">

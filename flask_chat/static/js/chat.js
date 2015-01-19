@@ -51,12 +51,50 @@ $(function() {
         message('System', e ? e : 'A unknown error occurred');
     });
 
+    // messageを削除(TODO: でたらめなのであとで直す)
+    $(".message-delete-link").on("click", function() {
+        var delete_url = $(this).attr('data-delete-url');
+
+        $.ajax({
+            url: delete_url,
+            type: 'DELETE',
+            success: function(response) {
+                if (response.status == 'OK') {
+                    // window.location = '{{ url_for('message') }}';
+                } else {
+                    alert('Delete failed.')
+                }
+            }
+        });
+
+        return false;
+    });
+
+    // messageを編集(TODO: でたらめなのであとで直す)
+    $(".message-delete-link").on("click", function() {
+        var edit_url = $(this).attr('data-delete-url');
+
+        $.ajax({
+            url: edit_url,
+            type: 'DELETE',
+            success: function(response) {
+                if (response.status == 'OK') {
+                    // window.location = '{{ url_for('message') }}';
+                } else {
+                    alert('Delete failed.')
+                }
+            }
+        });
+
+        return false;
+    });
+
     // 他から来たメッセージを処理
     //function message (from, msg) {
     var message = function(from, msg) {
         //$('#lines').append($('<p>').append($('<b>').text(from), msg));
         // TDOO: 今後削除や他の処理も入れる
-        var button = '<button>edit</button>' + ' ' +
+        var button = '<button class="message-delete-link" href="#">edit</button>' + ' ' +
                      '<button>delete</button>';
         var other_text = msg + ' ' + button;
         $('#lines').append($('<p>').append($('<b>').text(from), other_text));

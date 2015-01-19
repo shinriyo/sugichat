@@ -309,6 +309,20 @@ def logout():
     return redirect(url_for('rooms'))
 
 
+# TODO: メッセージのedit, delete
+# 多分メッセージ自体のDB登録が先と思う
+@app.route('/<int:user_id>/<int:message_id>/edit/', methods=['GET', 'POST'])
+# @login_required
+def edit_message(user_id):
+    return render_template('hoge.html')
+
+
+@app.route('/<int:user_id>/<int:message_id>/delete/', methods=['GET', 'POST'])
+# @login_required
+def delete_message(user_id):
+    return render_template('hoge.html')
+
+
 @app.route('/<int:user_id>/edit/', methods=['GET', 'POST'])
 # @login_required
 def user_detail(user_id):

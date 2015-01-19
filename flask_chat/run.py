@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from chat import app
 from gevent import monkey
 from socketio.server import SocketIOServer
