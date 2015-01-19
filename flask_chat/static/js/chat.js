@@ -93,10 +93,20 @@ $(function() {
     //function message (from, msg) {
     var message = function(from, msg) {
         //$('#lines').append($('<p>').append($('<b>').text(from), msg));
-        // TDOO: 今後削除や他の処理も入れる
-        var button = '<button class="message-delete-link" href="#">edit</button>' + ' ' +
-                     '<button>delete</button>';
-        var other_text = msg + ' ' + button;
+        var other_text = msg;
+
+        // 自分の時
+        if (from == 'me') {
+            // TDOO: 今後削除や他の処理も入れる
+            var button = '<button class="message-delete-link">edit</button>' + ' ' +
+                         '<button class="message-edit-link">delete</button>';
+            other_text += ' ' + button;
+        }
+        // TODO: 自分以外の時もボタンを作りたい
+        else
+        {
+        }
+
         $('#lines').append($('<p>').append($('<b>').text(from), other_text));
     }
 
