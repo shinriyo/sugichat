@@ -12,6 +12,7 @@ from gevent import monkey
 from sqlalchemy.orm import synonym
 from flask import Flask, Response, request, render_template, url_for, redirect, session, flash, jsonify, abort
 from flask.ext.sqlalchemy import SQLAlchemy
+# from flask.ext.security import login_required
 
 monkey.patch_all()
 
@@ -67,25 +68,6 @@ class ChatUser(db.Model):
         return self.name
 
 
-# TODO: 後で使う
-class User(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), nullable=False)
-    password = db.Column(db.String(20), nullable=False)
-    # こちらは実際の名前
-    name = db.Column(db.String(20), nullable=False)
-
-    def save(self, *args, **kwargs):
-        db.session.add(self)
-        db.session.commit()
-
-    def __unicode__(self):
-        return self.username
-
-
-"""
-
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -121,7 +103,15 @@ class User(db.Model):
     def __repr__(self):
         return u'<User id={self.id} email={self.email!r}>'.format(
             self=self)
-"""
+
+    def save(self, *args, **kwargs):
+        """
+        init_db.pyで使う保存
+        :param args:
+        :param kwargs:
+        """
+        db.session.add(self)
+        db.session.commit()
 
 
 def get_default_context():
@@ -202,7 +192,8 @@ def room(slug):
     default_context = get_default_context()
     context.update(default_context)
     # TODO: user name
-    name = session['name']
+    # name = session['name']
+    name = session['user_id']
     context.update({'name': name})
 
     return render_template('room.html', **context)
@@ -256,50 +247,24 @@ def create_room():
 # ログイン
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    error = None
-    if request.method == 'POST':
-        # DBでやる
-        username = request.form['username']
-        password = request.form['password']
-        where = User.username == username
-        # ユーザ名だけでまず検索
-        res = db.session.query(User).filter(where)
-
-        # ユーザ調べる
-        if res.count() > 0:
-            where = User.password == password
-            res = res.filter(where)
-            # パスワード調べる
-            if res.count() > 0:
-                session['logged_in'] = True
-                # ユーザの名前入れておく
-                session['name'] = res[0].name
-                flash('You were logged in')
-                return redirect(url_for('rooms'))
-            else:
-                error = 'Invalid password'
-        else:
-            error = 'Invalid username'
-
-    context = get_default_context()
-    context.update(error=error)
-    return render_template('login.html', **context)
-
-# これ使いたい
-"""
-@app.route('/login', methods=['GET', 'POST'])
-def login():
     if request.method == 'POST':
         user, authenticated = User.authenticate(db.session.query,
-                request.form['email'], request.form['password'])
+                                                request.form['email'], request.form['password'])
         if authenticated:
             session['user_id'] = user.id
+            # ユーザの名前入れておく
+            session['name'] = user.name
+            session['logged_in'] = True
             flash('You were logged in')
-            return redirect(url_for('show_entries'))
+            return redirect(url_for('rooms'))
         else:
-            flash('Invalid email or password')
-    return render_template('login.html')
-"""
+            # TODO: 片方だけにしたいかも
+            error = 'Invalid email or password'
+            flash(error)
+
+    context = get_default_context()
+    return render_template('login.html', **context)
+
 
 # ログアウト
 @app.route('/logout')

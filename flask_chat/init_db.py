@@ -15,5 +15,5 @@ chat.init_db()
 
 # admin追加
 from chat import User
-user = User(username='admin', password='default', name=u'Adminさん')
+user = User(name='Admin', password='default', email='shinriyo@gmail.com')
 user.save()
