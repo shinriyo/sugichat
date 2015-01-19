@@ -102,9 +102,13 @@ $(function() {
                          '<button class="message-edit-link">delete</button>';
             other_text += ' ' + button;
         }
-        // TODO: 自分以外の時もボタンを作りたい
-        else
-        {
+        else if (from == 'SystemAttempting') {
+            // TODO: システムの時なにもない
+        } else {
+            // TODO: 自分以外の時もボタンを作りたい(権限的に消すのはない)
+            var button = '<button class="message-delete-link">edit</button>' + ' ' +
+                         '<button class="message-edit-link">delete</button>';
+            // other_text += ' ' + button;
         }
 
         $('#lines').append($('<p>').append($('<b>').text(from), other_text));
