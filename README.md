@@ -35,9 +35,15 @@ init_db.py
 
 ### DB初期化(Heroku用)
 
+以下をchat.pyへ記載しておく。
 ```
 heroku addons:add heroku-postgresql:dev
 heroku config | grep HEROKU_POSTGRESQL
+```
+
+実際に初期化
+```
+from main import db
 ```
 
 ### アプリケーションを起動
