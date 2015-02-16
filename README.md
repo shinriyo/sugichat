@@ -27,8 +27,13 @@ Flask
 
 ## Usage
 
-### DB初期化
+### DB初期化(開発時)
 
+```
+rm /tmp/chat.db
+```
+にてsqliteのファイルを消してから、
+以下を実行する。
 ```
 init_db.py
 ```
@@ -43,7 +48,12 @@ heroku config | grep HEROKU_POSTGRESQL
 
 実際に初期化
 ```
-from main import db
+heroku run python
+```
+でPythonコンソールを起動し、
+```
+from initdb import init
+init()
 ```
 
 ### アプリケーションを起動
