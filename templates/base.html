@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}{{ title }}{% endblock title %}</title>
+    <link rel="stylesheet" href="/static/css/chat.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script type="text/javascript">
+      var showForm = function() {
+        $('form').slideDown(function() {
+          $('form input[type="text"]').focus();
+        });
+      };
+    </script>
+  </head>
+  <body>
+    <h1>{{ title }}</h1>
+    <div class=metanav>
+    {% if not session.logged_in %}
+      <a href="{{ url_for('login') }}">log in</a>
+    {% else %}
+      Name: {{ session.name }}
+      <a href="{{ url_for('logout') }}">log out</a>
+    {% endif %}
+
+    {% for message in get_flashed_messages() %}
+    <div class=flash>{{ message }}</div>
+    {% endfor %}
+    </div>
+    <div class=page>
+
+      <div id="main">
+      {% block content %}
+      {% endblock content %}
+      </div>
+
+      {% block form %}
+      {% endblock form %}
+    </div>
+
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js"></script>
+    <script src="/static/js/socketio/socket.io.min.js"></script>
+
+    {% block extra_js %}
+    {% endblock extra_js %}
+
+  </body>
+  <div align="right">&copy;shinriyo 2015</div>
+</html>
