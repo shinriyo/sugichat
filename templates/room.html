@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}{{ room }}{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+  window.room = "{{ room.id }}";
+</script>
+<script src="/static/js/chat.js"></script>
+{% endblock %}
+
+{% block content %}
+<div>
+<h2>Room: {{ room }}</h2>
+</div>
+<div id="chat">
+  <input id="nick" value="{{ name }}" hidden="true">
+  <!-- IDとPASS -->
+  <!--div id="nickname">
+    <form id="set-nickname" class="wrap">
+      <p>Please type in your nickname and press enter.</p>
+      <input id="nick">
+      <p id="nickname-err">Nickname already in use</p>
+    </form>
+  </div-->
+  <div id="connecting">
+    <div class="wrap">Connecting to socket.io server</div>
+  </div>
+
+  <div id="messages">
+    <div id="nicknames"><span>Online:</span></div>
+    <div id="lines"></div>
+  </div>
+
+  <!-- TODO: message options
+  http://dev.styler.jp/bootstrap-plus.html
+  http://hyper-text.org/archives/2012/10/font_awesome.shtml
+  -->
+  <!-- TODO: ネットがないときは隠したい　-->
+  <div>
+    <ul class="commands">
+      <li data-wysihtml5-command="bold" title="Make text bold (CTRL + B)" class="btn"><i class="fa fa-italic fa-lg fw"></i>
+      </li>
+      <li data-wysihtml5-command="bold" title="Make text bold (CTRL + B)" class="btn"><i class="fa fa-bold fa-lg fw"></i>
+      </li>
+      <li data-wysihtml5-command="italic" title="Make text italic (CTRL + I)" class="btn">
+        <i class="fa fa-italic fa-lg fw"></i>
+      </li>
+      <li data-wysihtml5-command="underline" title="Make text italic (CTRL + I)" class="btn">
+        <i class="fa fa-underline fa-lg fw"></i>
+      </li>
+      <li data-wysihtml5-command="insertImage" title="Insert an image" class="btn">
+        <i class="fa fa-picture-o fa-lg fw"></i>
+      </li>
+    </ul>
+  </div>
+  <!-- TODO: ネットがないときは隠したい　-->
+  <!-- message -->
+  <form id="send-message">
+    <input id="message">
+    <button>Send</button>
+  </form>
+</div>
+<a href="{{ url_for('rooms') }}">一覧へ</a>
+{% endblock %}

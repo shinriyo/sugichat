@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block extra_js %}
+<script type="text/javascript">
+  $(showForm);
+
+  // roomを削除
+  $(".room-delete-link").on("click", function() {
+      var delete_url = $(this).attr('data-delete-url');
+
+      $.ajax({
+          url: delete_url,
+          type: 'DELETE',
+          success: function(response) {
+              if (response.status == 'OK') {
+                  window.location = '{{ url_for('rooms') }}';
+              } else {
+                  alert('Delete failed.')
+              }
+          }
+      });
+
+      return false;
+  });
+</script>
+{% endblock %}
+
+{% block content %}
+  {% if not session.logged_in %}
+    {# ログインしてない時だけ #}
+    ログインしましょう。
+  {% else %}
+    {# ログインした時だけ #}
+    {% for room in rooms %}
+    <div class="room">
+      <div>
+        <!-- TODO: 部屋の削除機能 -->
+        <a href="{{ room.get_absolute_url() }}">{{ room }}</a>
+        <a class="room-delete-link" href="#"
+           data-delete-url="{{ url_for('remove_room', remove_room_id=room.id) }}">
+           x
+        </a>
+      </div>
+      <ul>
+        <!-- TODO: 動かない -->
+        {% for user in room.users.all() %}
+        <li>{{ user }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% else %}
+    <p>There are currently no rooms! Add one below.</p>
+    {% endfor %}
+  {% endif %}
+  <br clear="all">
+
+{% endblock content %}
+
+{% block form %}
+<form method="post" action="{{ url_for('create_room') }}">
+  {# ログインした時だけ #}
+  {% if session.logged_in %}
+    <input type="text" id="name" name="name">
+    <!--input type="submit" id="submit" value="Add Room"-->
+    <button type="submit" id="submit">Add Room</button>
+  {% endif %}
+</form>
+{% endblock %}
