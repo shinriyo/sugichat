@@ -27,6 +27,21 @@ Flask
 
 ## Usage
 
+### DB初期化
+
+```
+init_db.py
+```
+
+### DB初期化(Heroku用)
+
+```
+heroku addons:add heroku-postgresql:dev
+heroku config | grep HEROKU_POSTGRESQL
+```
+
+### アプリケーションを起動
+
 ```
 python app.py
 ```

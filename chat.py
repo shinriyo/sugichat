@@ -23,7 +23,25 @@ app.debug = True
 TITLE = 'SugiChat'
 # これ入れないとloginできない
 SECRET_KEY = 'development key'
-SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/chat.db'
+
+import socket
+# ローカル(開発)かどうかの判別に使ってる
+HOSTNAME = socket.gethostname()
+
+# toshima.ne.jpは仕方ない
+if 'local' in HOSTNAME or 'toshima.ne.jp' in HOSTNAME:
+    # sqlite (dev)
+    db_conn = 'sqlite:////tmp/chat.db'
+else:
+    """
+    PostgreSQL (herokuの時に使う)
+    以下のコマンドで判別した。
+    heroku addons:add heroku-postgresql:dev
+    heroku config | grep HEROKU_POSTGRESQL
+    """
+    db_conn = 'postgres://sniogcflwjdaxt:7vYj8gyBFs40dXB3C03tMWdt5m@ec2-107-22-249-138.compute-1.amazonaws.com:5432/d5tiimp9rbemre'
+
+SQLALCHEMY_DATABASE_URI = db_conn
 
 app.config.from_object(__name__)
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
@@ -412,5 +430,5 @@ def socketio(remaining):
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    #app.run()
+    # app.run()
     app.run(port)
