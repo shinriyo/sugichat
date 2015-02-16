@@ -52,7 +52,7 @@ heroku run python
 ```
 でPythonコンソールを起動し、
 ```
-from initdb import init
+from init_db import init
 init()
 ```
 
